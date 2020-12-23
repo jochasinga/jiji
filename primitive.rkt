@@ -20,6 +20,13 @@
                             (make-posn unit_ 0))
                       mode
                       color))
+(define (two->x x)
+  (polygon (list (make-posn x 0)
+                            (make-posn x unit_)
+                            (make-posn (+ x unit_) 0))
+                      mode
+                      color))
+
 (define three (polygon (list (make-posn 0 0)
                              (make-posn (/ unit_ 2) (- unit_))
                              (make-posn unit_ 0))                       
@@ -45,6 +52,31 @@
 (define seven
     (above three (beside three three)))
 
+(define eight (polygon (list (make-posn 0 0)
+                             (make-posn unit_ (/ unit_ 2))
+                             (make-posn (/ unit_ 2) unit_))
+                       mode
+                       color))
+  
+(define eight_ (place-image eight
+                            (/ unit_ 2)
+                            (/ unit_ 2)
+                            (unit-sq unit_)))
+
+(define nine_ (place-image (scale 0.5 one)
+                           (/ unit_ 2)
+                           (/ unit_ 2)
+                           (unit-sq unit_)))
+
+(define ten_
+  (let ([t (scale 0.5 two)])
+    (place-images
+     (list t t)
+     (list (make-posn (/ unit_ 4) (* 3 (/ unit_ 4)))
+           (make-posn (* 3 (/ unit_ 4)) (/ unit_ 4)))
+     (unit-sq unit_))))
+    
+    
 (define tri-pyramid (scale 0.5
                            (place-image seven unit_ unit_ (unit-sq (* 2 unit_)))))
 (define kite (place-image six
