@@ -75,8 +75,48 @@
      (list (make-posn (/ unit_ 4) (* 3 (/ unit_ 4)))
            (make-posn (* 3 (/ unit_ 4)) (/ unit_ 4)))
      (unit-sq unit_))))
-    
-    
+
+(define eleven_
+  (let ([u (scale 0.5 one)]
+        [offset (/ unit_ 4)])
+    (place-image
+     u
+     offset offset
+     (unit-sq unit_))))
+
+(define thirteen (polygon (list (make-posn 0 0)
+                               (make-posn (/ unit_ 2) (- (/ unit_ 2)))
+                               (make-posn unit_ 0))
+                       mode
+                       color))
+(define thirteen_ (place-image/align thirteen
+                                   (/ unit_ 2) (/ unit_ 2) "middle" "top"
+                                   (unit-sq unit_)))
+                              
+(define twelve (flip-vertical thirteen))
+
+(define twelve_ (place-image/align twelve
+                                   (/ unit_ 2) (/ unit_ 2)
+                                   'middle 'bottom
+                                   (unit-sq unit_)))
+
+(define fifteen_ (place-image/align
+                  (scale 0.5 two)
+                  0 0
+                  "left" "top"
+                  (unit-sq unit_)))
+
+(define sixteen_ (unit-sq unit_))
+
+(define fourteen
+  (let ([t (scale 0.5 two)])
+    (rotate 180 t)))
+(define fourteen_ (place-image/align
+                   fourteen
+                   (/ unit_ 2) (/ unit_ 2)
+                   "right" "bottom"
+                   (unit-sq unit_)))
+
 (define tri-pyramid (scale 0.5
                            (place-image seven unit_ unit_ (unit-sq (* 2 unit_)))))
 (define kite (place-image six
