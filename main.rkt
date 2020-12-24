@@ -5,6 +5,7 @@
 
 (require "primitive.rkt")
 
+(define angles '(0 90 180 270))
 (define o sixteen)
 (define center-blocks (map (lambda (f) (f))
                        (list one five nine sixteen)))
@@ -17,10 +18,11 @@
 (define (block [n 0])
   (local [(define c (pick-el blocks))
           (define d (pick-el blocks))
-          (define i (pick-el center-blocks))]
-    (above (beside (c) (c 180) (c 270))
-           (beside (c 270) i (c 90))
-           (beside (c 90) (c) (c 180)))))
+          (define i (pick-el center-blocks))
+          (define a (list-ref angles (random (length angles))))]
+          (above (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
+                 (beside (d (+ a (* 3 90))) i (d (+ a 90)))
+                 (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))))
 
 ;(define (block n)
 ;  (cond
