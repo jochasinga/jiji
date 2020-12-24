@@ -15,12 +15,10 @@
          ten
          eleven
          twelve
-         
-         unit-sq
-         empty-sq
-         unit/2
-         unit/4
-         unit_)
+         thirteen
+         fourteen
+         fifteen
+         sixteen)
 
 (define unit_ 20)
 (define -unit (- 0 unit_))
@@ -185,19 +183,26 @@
      unit/2 unit/2
      (unit-sq unit_)))
 
-(define thirteen (polygon (list (make-posn 0 0)
-                               (make-posn (/ unit_ 2) (- (/ unit_ 2)))
-                               (make-posn unit_ 0))
+(define _thirteen (polygon (list (make-posn 0 0)
+                                (make-posn (/ unit_ 2) (- (/ unit_ 2)))
+                                (make-posn unit_ 0))
                        mode
                        color))
-(define thirteen_ (place-image/align thirteen
-                                   (/ unit_ 2) (/ unit_ 2) "middle" "top"
-                                   (unit-sq unit_)))
-                              
+(define thirteen_ (place-image/align _thirteen
+                                   unit/2 unit/2
+                                   "middle" "top"
+                                   (empty-sq unit_)))
+(define (thirteen [deg 0])
+  (place-image
+   (rotate deg thirteen_)
+   unit/2 unit/2
+   (unit-sq unit_)))
+  
+                       
 (define _twelve
-  (place-image/align (flip-vertical thirteen)
+  (place-image/align (flip-vertical _thirteen)
                      unit/2 unit/2
-                     'middle 'bottom
+                     'middle 'top
                      (empty-sq unit_)))
 (define (twelve [deg 0])
   (rotate deg _twelve)
@@ -205,22 +210,31 @@
                unit/2 unit/2
                (unit-sq unit_)))
 
-(define fifteen_ (place-image/align
+(define _fifteen (place-image/align
                   (scale 0.5 _two)
                   0 0
                   "left" "top"
-                  (unit-sq unit_)))
+                  (empty-sq unit_)))
+(define (fifteen [deg 0])
+  (place-image (rotate deg _fifteen)
+               unit/2 unit/2
+               (unit-sq unit_)))
 
-(define sixteen_ (unit-sq unit_))
+(define sixteen (unit-sq unit_))
 
-(define fourteen
+(define _fourteen
   (let ([t (scale 0.5 _two)])
     (rotate 180 t)))
 (define fourteen_ (place-image/align
-                   fourteen
+                   _fourteen
                    (/ unit_ 2) (/ unit_ 2)
                    "right" "bottom"
-                   (unit-sq unit_)))
+                   (empty-sq unit_)))
+(define (fourteen [deg 0])
+  (place-image (rotate deg fourteen_)
+               unit/2 unit/2
+               (unit-sq unit_)))
+  
 
 (define tri-pyramid (scale 0.5
                            (place-image _seven unit_ unit_ (unit-sq (* 2 unit_)))))
