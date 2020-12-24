@@ -220,7 +220,7 @@
                unit/2 unit/2
                (unit-sq unit_)))
 
-(define sixteen (unit-sq unit_))
+(define (sixteen) (unit-sq unit_))
 
 (define _fourteen
   (let ([t (scale 0.5 _two)])
