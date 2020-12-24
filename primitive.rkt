@@ -6,6 +6,8 @@
 (provide one
          two
          three
+         four
+         five
          ten
          ten_)
 
@@ -61,14 +63,32 @@
                unit/2 unit/2
                (unit-sq unit_)))
 
-(define four (rectangle (/ unit_ 2) unit_ mode color))
-  
-(define five (polygon (list (make-posn 0 0)
+(define _four (rectangle (/ unit_ 2) unit_ mode color))
+(define (four [deg 0])
+  (place-image
+   (rotate deg (place-image
+                (if (= 0 (modulo deg 90))
+                    _four
+                    (scale 0.75 _four))
+                unit/4 unit/2
+                (empty-sq unit_)))
+   unit/2 unit/2
+   (unit-sq unit_)))
+
+(define _five (polygon (list (make-posn 0 0)
                             (make-posn (/ unit_ 2) (- (/ unit_ 2)))
                             (make-posn unit_ 0)
                             (make-posn (/ unit_ 2) (/ unit_ 2)))
                       mode
                       color))
+(define (five [deg 0])
+  (place-image
+   (rotate deg
+           (place-image _five
+                        unit/2 unit/2
+                        (empty-sq unit_)))
+  unit/2 unit/2
+  (unit-sq unit_)))
 
 (define six (polygon (list (make-posn 0 0)
                            (make-posn unit_ (/ unit_ 2))
@@ -174,11 +194,3 @@
                              (/ unit_ 2)
                              (/ unit_ 2)
                              (unit-sq unit_)))
-(define half-sq (place-image four
-                             (/ unit_ 4)
-                             (/ unit_ 2)
-                             (rectangle unit_ unit_ mode bg-color)))
-(define diamond (place-image five
-                             (/ unit_ 2)
-                             (/ unit_ 2)
-                             (rectangle unit_ unit_ mode bg-color)))
