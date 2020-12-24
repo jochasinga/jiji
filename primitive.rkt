@@ -8,8 +8,19 @@
          three
          four
          five
+         six
+         seven
+         eight
+         nine
          ten
-         ten_)
+         eleven
+         twelve
+         
+         unit-sq
+         empty-sq
+         unit/2
+         unit/4
+         unit_)
 
 (define unit_ 20)
 (define -unit (- 0 unit_))
@@ -90,15 +101,46 @@
   unit/2 unit/2
   (unit-sq unit_)))
 
-(define six (polygon (list (make-posn 0 0)
+(define _six (polygon (list (make-posn 0 0)
                            (make-posn unit_ (/ unit_ 2))
                            (make-posn unit_ unit_)
                            (make-posn (/ unit_ 2) unit_))
                      mode
                      color))
+(define (six [deg 0])
+  (place-image
+   (rotate deg (place-image
+                _six
+                unit/2 unit/2
+                (empty-sq unit_)))
+   unit/2 unit/2
+   (unit-sq unit_)))
 
-(define seven
+(define _seven
     (above _three (beside _three _three)))
+;; This can't handle angle that's not a right angle.
+(define (seven [deg 0])
+  (let ([t (scale 0.5 _seven)])
+    (place-image
+     (rotate deg (place-image
+                      t
+                      unit/2 unit/2
+                  (empty-sq unit_)))
+     unit/2 unit/2
+     (unit-sq unit_))))
+
+;(define (seven [deg 0])
+;  (let ([t (scale 0.5 _seven)])
+;    (define w (image-width t))
+;    (define h (image-height t))
+;    (define d (max w h))
+;    (define dx (/ w 2))   ; centroid x offset
+;    (define dy (* 2/3 h)) ; centroid y offset
+;    (define blank (circle d "solid" "transparent"))
+;    (let ([shape (rotate deg (place-image/align t (- d dx) (- d dy) "left" "top" blank))])
+;      (place-image shape
+;                   unit/2 unit/2
+;                   (unit-sq unit_)))))
 
 (define _eight (polygon (list (make-posn 0 0)
                              (make-posn unit_ (/ unit_ 2))
@@ -111,19 +153,14 @@
                (/ unit_ 2)
                (unit-sq unit_)))
 
-(define nine_ (place-image (scale 0.5 _one)
-                           (/ unit_ 2)
-                           (/ unit_ 2)
-                           (unit-sq unit_)))
-
 (define (nine [deg 0])
-  (let ([t (scale 0.5 one)])
-    (place-image (rotate deg t)
-                 unit/2 unit/2
-                 (unit-sq unit_))))
+  (place-image (rotate deg (scale 0.5 _one))
+               (/ unit_ 2)
+               (/ unit_ 2)
+               (unit-sq unit_)))
 
 (define (ten [deg 0])
-  (let ([t (scale 0.5 two)])
+  (let ([t (scale 0.5 _two)])
     (place-image
      (rotate deg
              (place-images
@@ -134,21 +171,19 @@
      unit/2 unit/2
      (unit-sq unit_))))
 
-(define ten_
-  (let ([t (scale 0.5 _two)])
-    (place-images
-     (list t t)
-     (list (make-posn (/ unit_ 4) (* 3 (/ unit_ 4)))
-           (make-posn (* 3 (/ unit_ 4)) (/ unit_ 4)))
-     (unit-sq unit_))))
-
-(define eleven_
+(define _eleven
   (let ([u (scale 0.5 _one)]
         [offset (/ unit_ 4)])
     (place-image
      u
      offset offset
-     (unit-sq unit_))))
+     (empty-sq unit_))))
+
+(define (eleven [deg 0])
+    (place-image
+     (rotate deg _eleven)
+     unit/2 unit/2
+     (unit-sq unit_)))
 
 (define thirteen (polygon (list (make-posn 0 0)
                                (make-posn (/ unit_ 2) (- (/ unit_ 2)))
@@ -159,12 +194,16 @@
                                    (/ unit_ 2) (/ unit_ 2) "middle" "top"
                                    (unit-sq unit_)))
                               
-(define twelve (flip-vertical thirteen))
-
-(define twelve_ (place-image/align twelve
-                                   (/ unit_ 2) (/ unit_ 2)
-                                   'middle 'bottom
-                                   (unit-sq unit_)))
+(define _twelve
+  (place-image/align (flip-vertical thirteen)
+                     unit/2 unit/2
+                     'middle 'bottom
+                     (empty-sq unit_)))
+(define (twelve [deg 0])
+  (rotate deg _twelve)
+  (place-image (rotate deg _twelve)
+               unit/2 unit/2
+               (unit-sq unit_)))
 
 (define fifteen_ (place-image/align
                   (scale 0.5 _two)
@@ -184,8 +223,8 @@
                    (unit-sq unit_)))
 
 (define tri-pyramid (scale 0.5
-                           (place-image seven unit_ unit_ (unit-sq (* 2 unit_)))))
-(define kite (place-image six
+                           (place-image _seven unit_ unit_ (unit-sq (* 2 unit_)))))
+(define kite (place-image _six
                           (/ unit_ 2)
                           (/ unit_ 2)
                           (unit-sq unit_)))
