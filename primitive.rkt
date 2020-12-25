@@ -28,7 +28,7 @@
 
 (define mode 'solid)
 (define color 'slateblue)
-(define bg-color 'gray)
+(define bg-color 'white)
 
 (define (unit-sq u) (rectangle u u mode bg-color))
 (define (empty-sq u) (rectangle u u mode "transparent"))
@@ -220,7 +220,7 @@
                unit/2 unit/2
                (unit-sq unit_)))
 
-(define (sixteen) (unit-sq unit_))
+(define (sixteen [deg 0]) (unit-sq unit_))
 
 (define _fourteen
   (let ([t (scale 0.5 _two)])

@@ -6,12 +6,12 @@
 (require "primitive.rkt")
 
 (define angles '(0 90 180 270))
-(define o sixteen)
+(define blank (sixteen))
 (define center-blocks (map (lambda (f) (f))
                        (list one five nine sixteen)))
 (define blocks (list 
-                two three four six seven eight ten
-                eleven twelve thirteen fourteen fifteen))
+                two three four five six seven eight nine ten
+                eleven twelve thirteen fourteen fifteen sixteen))
                     
 (define (pick-el l) (list-ref l (random (length l))))
 
@@ -20,17 +20,18 @@
           (define d (pick-el blocks))
           (define i (pick-el center-blocks))
           (define a (list-ref angles (random (length angles))))]
-          (above (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
-                 (beside (d (+ a (* 3 90))) i (d (+ a 90)))
-                 (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))))
+          (above
+           (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
+           (beside (d (+ a (* 3 90))) i (d (+ a 90)))
+           (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))))
 
-;(define (block n)
+;(define (make-block n)
 ;  (cond
-;    [(zero? n) (square 1 "solid" "red")]
+;    [(zero? n) (block)]
 ;    [else
-;     (local [(define c (block (- n 1)))
-;             (define i (square (image-width c) "solid" "white"))]
+;     (local [(define c (make-block (- n 1)))
+;             (define i (block))]
 ;       (above (beside c c c)
-;              (beside c i c)
+;              (beside c c c)
 ;              (beside c c c)))]))
 
