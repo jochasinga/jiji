@@ -2,6 +2,7 @@
 
 (require 2htdp/image)
 (require lang/posn)
+(require racket/match)
 
 (provide one
          two
@@ -18,7 +19,8 @@
          thirteen
          fourteen
          fifteen
-         sixteen)
+         sixteen
+         unit_)
 
 (define unit_ 20)
 (define -unit (- 0 unit_))
@@ -30,15 +32,25 @@
 (define color 'slateblue)
 (define bg-color 'white)
 
+;(define solid-view (variant #:solid-view 0))
+;(define line-view (variant #:line-view 1))
+;(define mix-view (variant #:mix-view 2))
+
 (define (unit-sq u) (rectangle u u mode bg-color))
 (define (empty-sq u) (rectangle u u mode "transparent"))
-
+(define (unit-square
+         [u unit_]
+         #:view-mode [view-mode 'solid])
+  (match view-mode
+    ['solid   (rectangle u u 'solid bg-color)]
+    ['outline (rectangle u u 'outline 'black)]))
+  
 ;; Coordinates
 (define origin (make-posn 0 0))
 (define up->1/2 (make-posn 0 -unit))
 
 (define _one (square unit_ mode color))
-(define (one [deg 0])
+(define (one [deg 0] #:view-mode [mode 'solid])
   (place-image (rotate deg
                        (if (= 0 (modulo deg 90))
                            _one

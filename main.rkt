@@ -15,15 +15,26 @@
                     
 (define (pick-el l) (list-ref l (random (length l))))
 
-(define (block [n 0])
+(define (block [n 0] #:view-mode [m 'solid])
   (local [(define c (pick-el blocks))
           (define d (pick-el blocks))
           (define i (pick-el center-blocks))
           (define a (list-ref angles (random (length angles))))]
-          (above
-           (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
-           (beside (d (+ a (* 3 90))) i (d (+ a 90)))
-           (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))))
+    (let ([bg (above
+               (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
+               (beside (d (+ a (* 3 90))) i (d (+ a 90)))
+               (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))]
+          [grid (local [(define sq (square unit_ 'outline 'black))]
+                  (above
+                   (beside sq sq sq)
+                   (beside sq sq sq)
+                   (beside sq sq sq)))]
+          [curtain (square (* 3 unit_) 'solid (make-color 255 255 255 150))])
+        (if (eq? m 'solid)
+          bg
+          (overlay grid curtain bg)))))
+          
+    
 
 ;(define (make-block n)
 ;  (cond
