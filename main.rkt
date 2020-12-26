@@ -1,7 +1,9 @@
+#! /usr/bin/env racket
 #lang racket
 
 (require 2htdp/image)
 (require lang/posn)
+(require racket/cmdline)
 
 (require "primitive.rkt")
 
@@ -33,8 +35,6 @@
         (if (eq? m 'solid)
           bg
           (overlay grid curtain bg)))))
-          
-    
 
 ;(define (make-block n)
 ;  (cond
@@ -45,4 +45,39 @@
 ;       (above (beside c c c)
 ;              (beside c c c)
 ;              (beside c c c)))]))
+
+(define view-mode (make-parameter 'solid))
+(define file-path (make-parameter "./block.svg"))
+
+(define parser
+  (command-line
+   #:usage-help
+   "Jiji is a command line tool to generate nine-block quilt pattern"
+
+   #:once-each
+   [("-m" "--mode") VIEW-MODE
+                    "Set a view mode to solid or outline"
+                    (view-mode (string->symbol VIEW-MODE))]
+   [("-p" "--path") FILE-PATH
+                    "Set a view mode to solid or outline"
+                    (file-path FILE-PATH)]
+
+   #:args () (void)))
+
+(define (save-as-image img
+                       [filename "./block.png"]
+                       #:format   [format 'png])
+  (let ([default-save (lambda ()
+       (save-image (block) filename))])
+    (cond
+      [(eq? format 'svg)
+        (save-svg-image (block) "./block.svg")]
+      [(eq? format 'png) (default-save)]
+      [else (default-save)])
+
+  (printf "~a ~a\n" "Saved file as" name)))
+
+(save-as-image (block))
+
+
 
