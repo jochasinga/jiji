@@ -22,7 +22,7 @@
          sixteen
          unit_)
 
-(define unit_ 20)
+(define unit_ 100)
 (define -unit (- 0 unit_))
 (define (unit/x x) (/ unit_ x))
 (define unit/2 (/ unit_ 2))
