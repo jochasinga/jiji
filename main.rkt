@@ -4,6 +4,7 @@
 (require 2htdp/image)
 (require lang/posn)
 (require racket/cmdline)
+(require racket/path)
 
 (require "primitive.rkt")
 
@@ -36,48 +37,36 @@
           bg
           (overlay grid curtain bg)))))
 
-;(define (make-block n)
-;  (cond
-;    [(zero? n) (block)]
-;    [else
-;     (local [(define c (make-block (- n 1)))
-;             (define i (block))]
-;       (above (beside c c c)
-;              (beside c c c)
-;              (beside c c c)))]))
-
-(define view-mode (make-parameter 'solid))
-(define file-path (make-parameter "./block.svg"))
+(define view-mode (make-parameter "solid"))
+(define file-name (make-parameter "./block.png"))
 
 (define parser
   (command-line
    #:usage-help
-   "Jiji is a command line tool to generate nine-block quilt pattern"
+   "Jiji is a command line tool to generate nine-block quilt pattern."
 
    #:once-each
    [("-m" "--mode") VIEW-MODE
                     "Set a view mode to solid or outline"
-                    (view-mode (string->symbol VIEW-MODE))]
-   [("-p" "--path") FILE-PATH
+                    (view-mode VIEW-MODE)]
+   [("-n" "--name") FILE-NAME
                     "Set a view mode to solid or outline"
-                    (file-path FILE-PATH)]
+                    (file-name FILE-NAME)]
 
    #:args () (void)))
 
-(define (save-as-image img
-                       [filename "./block.png"]
-                       #:format   [format 'png])
-  (let ([default-save (lambda ()
-       (save-image (block) filename))])
-    (cond
-      [(eq? format 'svg)
-        (save-svg-image (block) "./block.svg")]
-      [(eq? format 'png) (default-save)]
-      [else (default-save)])
+(define (save-as-image
+         [filename "./block.png"]
+         [mode "solid"])
+  (let ([ext (string-downcase (bytes->string/utf-8 (path-get-extension filename)))]
+        [mo  (string->symbol mode)])
+    (if (string=? ext ".svg")
+        (save-svg-image (block #:view-mode mo) filename)
+        (save-image (block #:view-mode mo) filename))
 
-  (printf "~a ~a\n" "Saved file as" name)))
+    (printf "~a ~a\n" "Saved file as" filename)))
 
-(save-as-image (block))
+(save-as-image (file-name) (view-mode))
 
 
 
