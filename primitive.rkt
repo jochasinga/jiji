@@ -29,8 +29,8 @@
 (define unit/4 (/ unit_ 4))
 
 (define mode 'solid)
-(define color 'slateblue)
-(define bg-color 'white)
+(define color "cornflower blue")
+(define bg-color 'lavender)
 
 ;(define solid-view (variant #:solid-view 0))
 ;(define line-view (variant #:line-view 1))

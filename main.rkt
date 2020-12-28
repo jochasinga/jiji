@@ -27,7 +27,7 @@
                (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
                (beside (d (+ a (* 3 90))) i (d (+ a 90)))
                (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))]
-          [grid (local [(define sq (square unit_ 'outline 'black))]
+          [grid (local [(define sq (square unit_ 'outline "cornflower blue"))]
                   (above
                    (beside sq sq sq)
                    (beside sq sq sq)
