@@ -68,10 +68,10 @@
     (if (string=? ext ".svg")
         (let ([name (string-append path (uuid-string) ".svg")])          
           (save-svg-image (block #:view-mode mo) name)
-          (print name))
+          (printf "~a" name))
         (let ([name (string-append path (uuid-string) ".png")])
           (save-image (block #:view-mode mo) name)
-          (print name)))))
+          (printf "~a" name)))))
 
 (save-as-image (file-name) (view-mode))
 
