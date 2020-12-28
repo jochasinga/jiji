@@ -5,6 +5,8 @@
 (require lang/posn)
 (require racket/cmdline)
 (require racket/path)
+(require racket/format)
+(require uuid)
 
 (require "primitive.rkt")
 
@@ -38,7 +40,8 @@
           (overlay grid curtain bg)))))
 
 (define view-mode (make-parameter "solid"))
-(define file-name (make-parameter "./block.png"))
+(define file-name
+    (make-parameter (format "~a.png" uuid-string)))
 
 (define parser
   (command-line
@@ -47,24 +50,28 @@
 
    #:once-each
    [("-m" "--mode") VIEW-MODE
-                    "Set a view mode to solid or outline"
+                    "Set a view mode to solid or outline."
                     (view-mode VIEW-MODE)]
-   [("-n" "--name") FILE-NAME
-                    "Set a view mode to solid or outline"
+   [("-f" "--file") FILE-NAME
+                    "Set the destination file name."
                     (file-name FILE-NAME)]
 
    #:args () (void)))
 
 (define (save-as-image
-         [filename "./block.png"]
+         filename
          [mode "solid"])
-  (let ([ext (string-downcase (bytes->string/utf-8 (path-get-extension filename)))]
-        [mo  (string->symbol mode)])
+  (let ([mo    (string->symbol mode)]
+        [fname (~a (file-name-from-path filename))]
+        [path  (if (path-only filename) (~a (path-only filename)) "")]
+        [ext   (string-downcase (~a (path-get-extension filename)))])
     (if (string=? ext ".svg")
-        (save-svg-image (block #:view-mode mo) filename)
-        (save-image (block #:view-mode mo) filename))
-
-    (printf "~a ~a\n" "Saved file as" filename)))
+        (let ([name (string-append path (uuid-string) ".svg")])          
+          (save-svg-image (block #:view-mode mo) name)
+          (print name))
+        (let ([name (string-append path (uuid-string) ".png")])
+          (save-image (block #:view-mode mo) name)
+          (print name)))))
 
 (save-as-image (file-name) (view-mode))
 
