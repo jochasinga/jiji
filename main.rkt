@@ -6,10 +6,14 @@
 (require racket/cmdline)
 (require racket/path)
 (require racket/format)
+(require racket/match)
 (require uuid)
 
-(require "primitive.rkt")
+(require (prefix-in list/ "../ratchet/list.rkt"))
+(require (rename-in "primitive.rkt"
+                    (unit_ base-unit)))
 
+(define unit_ base-unit)
 (define angles '(0 90 180 270))
 (define blank (sixteen))
 (define center-blocks (map (lambda (f) (f))
@@ -20,7 +24,33 @@
                     
 (define (pick-el l) (list-ref l (random (length l))))
 
-(define (block [n 0] #:view-mode [m 'solid])
+(define (quilt [img1 null] [img2 null] #:trim-width [trim-width 0.5])
+  (let* ([minibloc (block #:scale 0.2)]
+         [a (cond
+              [(null? img1) minibloc]
+              [else (bitmap/file img1)])]
+         [b (cond
+              [(null? img2) minibloc]
+              [else (bitmap/file img2)])])
+    (overlay
+     (above
+      (beside b a b a b a b a b)
+      (beside a b a b a b a b a)
+      (beside b a b a b a b a b)
+      (beside a b a b a b a b a)
+      (beside b a b a b a b a b)
+      (beside a b a b a b a b a)
+      (beside b a b a b a b a b)
+      (beside a b a b a b a b a)
+      (beside b a b a b a b a b))
+     (scale 0.2 (fill-sq (* 10 (* 3 unit_)))))))
+
+
+(define (block [n 0]
+               #:view-mode [m 'solid]
+               #:size [size unit_]
+               #:scale [sc 1])
+  
   (local [(define c (pick-el blocks))
           (define d (pick-el blocks))
           (define i (pick-el center-blocks))
@@ -29,25 +59,44 @@
                (beside (c a) (d (+ a (* 2 90))) (c (+ a (* 3 90))))
                (beside (d (+ a (* 3 90))) i (d (+ a 90)))
                (beside (c (+ a 90)) (d a) (c (+ a (* 2 90)))))]
-          [grid (local [(define sq (square unit_ 'outline "cornflower blue"))]
+          [grid (local [(define sq (square size 'outline "cornflower blue"))]
                   (above
                    (beside sq sq sq)
                    (beside sq sq sq)
                    (beside sq sq sq)))]
-          [curtain (square (* 3 unit_) 'solid (make-color 255 255 255 150))])
-        (if (eq? m 'solid)
-          bg
-          (overlay grid curtain bg)))))
+          [curtain (square (* 3 size) 'solid (make-color 255 255 255 150))])
+        (scale sc
+               (if (eq? m 'solid)
+                   bg
+                   (overlay grid curtain bg))))))
 
+(define variation (make-parameter "single"))
 (define view-mode (make-parameter "solid"))
+(define image-files (make-parameter null))
 (define file-name
     (make-parameter (format "~a.png" uuid-string)))
 
 (define parser
   (command-line
+   #:program "nine-block generator"
+   
    #:usage-help
    "Jiji is a command line tool to generate nine-block quilt pattern."
+   
+   #:once-any
+   [("-s" "--single") "Generate a single nine-block unit"
+                      (print "single")
+                      (variation "single")]
+   [("-c" "--composition") "Generate a quilt design from blocks."
+                      (print "composition")
+                      (variation "composition")]
 
+   #:multi
+   [("-i" "--image") IMAGE-FILE
+                     "Image of a block"
+                     (print (image-files))
+                     (image-files (cons IMAGE-FILE image-files))]
+                      
    #:once-each
    [("-m" "--mode") VIEW-MODE
                     "Set a view mode to solid or outline."
@@ -73,7 +122,29 @@
           (save-image (block #:view-mode mo) name)
           (printf "~a" name)))))
 
-(save-as-image (file-name) (view-mode))
-
+(define (save-img image [dir "./"] [as "png"])
+  (cond
+    [(eq? as "png")
+     (let ([name (string-append dir (uuid-string) ".png")])
+       (save-image image name)
+       (printf "Saved ~a" name))]
+    [else 
+     (let ([name (string-append dir (uuid-string) ".svg")])          
+       (save-svg-image image name)
+       (printf "Saved ~a" name))]))
+  
+(match (variation)
+  ["single"
+   (save-img (block) "static/")]
+  ["composition"
+   (cond
+     [(pair? image-files)
+      (save-img
+       (quilt
+        (car (cdr (image-files)))
+        (car (image-files)))
+        "static/")]
+     [else
+      (save-img (quilt) "static/")])])
 
 

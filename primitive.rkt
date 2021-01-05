@@ -20,24 +20,27 @@
          fourteen
          fifteen
          sixteen
-         unit_)
+         unit_
+         fill-sq)
 
+;; Default unit
 (define unit_ 100)
-(define -unit (- 0 unit_))
-(define (unit/x x) (/ unit_ x))
-(define unit/2 (/ unit_ 2))
-(define unit/4 (/ unit_ 4))
 
+;; Other helpers
+(define (-unit [u unit_]) (- 0 u))
+(define (unit/x x [u unit_]) (/ u x))
+(define (unit/2 [u unit_]) (unit/x 2))
+(define (unit/4 [u unit_]) (unit/x 4))
+
+;; Default colors and style
 (define mode 'solid)
 (define color "cornflower blue")
 (define bg-color 'lavender)
 
-;(define solid-view (variant #:solid-view 0))
-;(define line-view (variant #:line-view 1))
-;(define mix-view (variant #:mix-view 2))
-
-(define (unit-sq u) (rectangle u u mode bg-color))
-(define (empty-sq u) (rectangle u u mode "transparent"))
+;; Some helper squares
+(define (fill-sq [u unit_]) (rectangle u u mode color))
+(define (unit-sq [u unit_]) (rectangle u u mode bg-color))
+(define (empty-sq [u unit_]) (rectangle u u mode "transparent"))
 (define (unit-square
          [u unit_]
          #:view-mode [view-mode 'solid])
@@ -49,213 +52,231 @@
 (define origin (make-posn 0 0))
 (define up->1/2 (make-posn 0 -unit))
 
-(define _one (square unit_ mode color))
-(define (one [deg 0] #:view-mode [mode 'solid])
-  (place-image (rotate deg
-                       (if (= 0 (modulo deg 90))
-                           _one
-                           (scale 0.75 _one)))
-               unit/2 unit/2
-               (unit-sq unit_)))
-  
-(define _two (polygon (list (make-posn 0 0)
-                            (make-posn 0 unit_)
-                            (make-posn unit_ 0))
-                      mode
-                      color))
-(define (two [deg 0])
-  (place-image
+;; Shape #1
+(define (_one [u unit_]) (square u mode color))
+
+(define (one [deg 0] [u unit_] #:view-mode [mode 'solid])
+  (overlay (rotate deg
+                   (if (= 0 (modulo deg 90))
+                       (_one u)
+                       (scale 0.75 (_one u))))
+           (unit-sq u)))
+
+;; Shape #2
+(define (_two [u unit_]) (polygon (list (make-posn 0 0)
+                                        (make-posn 0 u)
+                                        (make-posn u 0))
+                                  mode
+                                  color))
+(define (two [deg 0] [u unit_])
+  (overlay
      (rotate deg (place-image
                   (if (= 0 (modulo deg 90))
-                      _two
-                      (scale 0.75 _two))
-                  unit/2 unit/2
-                  (empty-sq unit_)))
-     unit/2 unit/2
-     (unit-sq unit_)))
+                      (_two u)
+                      (scale 0.75 (_two u)))
+                  (unit/2 u) (unit/2 u)
+                  (empty-sq u)))
+     (unit-sq u)))
 
-(define _three (polygon (list (make-posn 0 0)
-                              (make-posn (/ unit_ 2) (- unit_))
-                              (make-posn unit_ 0))                       
-                        mode
-                        color))
-(define (three [deg 0])
-  (place-image (rotate deg _three)
-               unit/2 unit/2
-               (unit-sq unit_)))
+;; Shape #3
+(define (_three [u unit_])
+  (polygon (list (make-posn 0 0)
+                 (make-posn (unit/2 u) (-unit u))
+                 (make-posn u 0))                       
+           mode
+           color))
+(define (three [deg 0] [u unit_])
+  (place-image (rotate deg (_three u))
+               (unit/2 u) (unit/2 u)
+               (unit-sq u)))
 
-(define _four (rectangle (/ unit_ 2) unit_ mode color))
-(define (four [deg 0])
+;; Shape #4
+(define (_four [u unit_])
+  (rectangle (unit/2 u) u mode color))
+
+(define (four [deg 0] [u unit_])
   (place-image
    (rotate deg (place-image
                 (if (= 0 (modulo deg 90))
-                    _four
-                    (scale 0.75 _four))
-                unit/4 unit/2
-                (empty-sq unit_)))
-   unit/2 unit/2
-   (unit-sq unit_)))
+                    (_four u)
+                    (scale 0.75 (_four u)))
+                (unit/4 u) (unit/2 u)
+                (empty-sq u)))
+   (unit/2 u) (unit/2 u)
+   (unit-sq u)))
 
-(define _five (polygon (list (make-posn 0 0)
-                            (make-posn (/ unit_ 2) (- (/ unit_ 2)))
-                            (make-posn unit_ 0)
-                            (make-posn (/ unit_ 2) (/ unit_ 2)))
+;; Shape #5
+(define (_five [u unit_])
+  (polygon (list (make-posn 0 0)
+                 (make-posn (unit/2 u) (- (unit/2 u)))
+                            (make-posn u 0)
+                            (make-posn (unit/2 u) (unit/2 u)))
                       mode
                       color))
-(define (five [deg 0])
+(define (five [deg 0] [u unit_])
   (place-image
    (rotate deg
-           (place-image _five
-                        unit/2 unit/2
-                        (empty-sq unit_)))
-  unit/2 unit/2
-  (unit-sq unit_)))
+           (place-image (_five u)
+                        (unit/2 u) (unit/2 u)
+                        (empty-sq u)))
+  (unit/2 u) (unit/2 u)
+  (unit-sq u)))
 
-(define _six (polygon (list (make-posn 0 0)
-                           (make-posn unit_ (/ unit_ 2))
-                           (make-posn unit_ unit_)
-                           (make-posn (/ unit_ 2) unit_))
-                     mode
-                     color))
-(define (six [deg 0])
+;; Shape #6
+(define (_six [u unit_])
+  (polygon (list (make-posn 0 0)
+                 (make-posn u (unit/2 u))
+                 (make-posn u u)
+                 (make-posn (unit/2 u) u))
+           mode
+           color))
+(define (six [deg 0] [u unit_])
   (place-image
    (rotate deg (place-image
-                _six
-                unit/2 unit/2
-                (empty-sq unit_)))
-   unit/2 unit/2
-   (unit-sq unit_)))
+                (_six u)
+                (unit/2 u) (unit/2 u)
+                (empty-sq u)))
+   (unit/2 u) (unit/2 u)
+   (unit-sq u)))
 
-(define _seven
-    (above _three (beside _three _three)))
+;; Shape #7
+(define (_seven [u unit_])
+    (above
+     (_three u)
+     (beside (_three u) (_three u))))
 ;; This can't handle angle that's not a right angle.
-(define (seven [deg 0])
-  (let ([t (scale 0.5 _seven)])
+(define (seven [deg 0] [u unit_])
+  (let ([t (scale 0.5 (_seven u))])
     (place-image
      (rotate deg (place-image
-                      t
-                      unit/2 unit/2
-                  (empty-sq unit_)))
-     unit/2 unit/2
-     (unit-sq unit_))))
+                  t
+                  (unit/2 u) (unit/2 u)
+                  (empty-sq u)))
+     (unit/2 u) (unit/2 u)
+     (unit-sq u))))
 
-;(define (seven [deg 0])
-;  (let ([t (scale 0.5 _seven)])
-;    (define w (image-width t))
-;    (define h (image-height t))
-;    (define d (max w h))
-;    (define dx (/ w 2))   ; centroid x offset
-;    (define dy (* 2/3 h)) ; centroid y offset
-;    (define blank (circle d "solid" "transparent"))
-;    (let ([shape (rotate deg (place-image/align t (- d dx) (- d dy) "left" "top" blank))])
-;      (place-image shape
-;                   unit/2 unit/2
-;                   (unit-sq unit_)))))
+;; Shape #8
+(define (_eight [u unit_])
+  (polygon (list (make-posn 0 0)
+                 (make-posn u (unit/2 u))
+                 (make-posn (unit/2 u) u))
+           mode
+           color))
+(define (eight [deg 0] [u unit_])
+  (place-image (rotate deg (_eight u))
+               (unit/2 u)
+               (unit/2 u)
+               (unit-sq u)))
 
-(define _eight (polygon (list (make-posn 0 0)
-                             (make-posn unit_ (/ unit_ 2))
-                             (make-posn (/ unit_ 2) unit_))
-                       mode
-                       color))
-(define (eight [deg 0])
-  (place-image (rotate deg _eight)
-               (/ unit_ 2)
-               (/ unit_ 2)
-               (unit-sq unit_)))
+;; Shape #9
+(define (nine [deg 0] [u unit_])
+  (place-image (rotate deg (scale 0.5 (_one u)))
+               (unit/2 u)
+               (unit/2 u)
+               (unit-sq u)))
 
-(define (nine [deg 0])
-  (place-image (rotate deg (scale 0.5 _one))
-               (/ unit_ 2)
-               (/ unit_ 2)
-               (unit-sq unit_)))
-
-(define (ten [deg 0])
-  (let ([t (scale 0.5 _two)])
+;; Shape #10
+(define (ten [deg 0] [u unit_])
+  (let ([t (scale 0.5 (_two u))])
     (place-image
      (rotate deg
              (place-images
               (list t t)
-              (list (make-posn unit/4 (* 3 unit/4))
-                    (make-posn (* 3 unit/4) unit/4))
-              (empty-sq unit_)))
-     unit/2 unit/2
-     (unit-sq unit_))))
+              (list (make-posn (unit/4 u) (* 3 (unit/4 u)))
+                    (make-posn (* 3 (unit/4 u)) (unit/4 u)))
+              (empty-sq u)))
+     (unit/2 u) (unit/2 u)
+     (unit-sq u))))
 
-(define _eleven
-  (let ([u (scale 0.5 _one)]
-        [offset (/ unit_ 4)])
+;; Shape #11
+(define (_eleven [u unit_])
+  (let ([un (scale 0.5 (_one u))]
+        [offset (unit/4 u)])
     (place-image
-     u
+     un
      offset offset
-     (empty-sq unit_))))
+     (empty-sq u))))
 
-(define (eleven [deg 0])
+(define (eleven [deg 0] [u unit_])
     (place-image
-     (rotate deg _eleven)
-     unit/2 unit/2
-     (unit-sq unit_)))
+     (rotate deg (_eleven u))
+     (unit/2 u) (unit/2 u)
+     (unit-sq u)))
 
-(define _thirteen (polygon (list (make-posn 0 0)
-                                (make-posn (/ unit_ 2) (- (/ unit_ 2)))
-                                (make-posn unit_ 0))
-                       mode
-                       color))
-(define thirteen_ (place-image/align _thirteen
-                                   unit/2 unit/2
-                                   "middle" "top"
-                                   (empty-sq unit_)))
-(define (thirteen [deg 0])
+;; Shape #13
+(define (_thirteen [u unit_])
+  (polygon (list (make-posn 0 0)
+                 (make-posn (unit/2 u) (- (unit/2 u)))
+                 (make-posn u 0))
+           mode
+           color))
+(define (thirteen_ [u unit_])
+  (place-image/align (_thirteen u)
+                     (unit/2 u) (unit/2 u)
+                     "middle" "top"
+                     (empty-sq u)))
+(define (thirteen [deg 0] [u unit_])
   (place-image
-   (rotate deg thirteen_)
-   unit/2 unit/2
-   (unit-sq unit_)))
+   (rotate deg (thirteen_ u))
+   (unit/2 u) (unit/2 u)
+   (unit-sq u)))
   
-                       
-(define _twelve
-  (place-image/align (flip-vertical _thirteen)
-                     unit/2 unit/2
-                     'middle 'top
-                     (empty-sq unit_)))
-(define (twelve [deg 0])
-  (rotate deg _twelve)
-  (place-image (rotate deg _twelve)
-               unit/2 unit/2
-               (unit-sq unit_)))
+;; Shape #12                       
+(define (_twelve [u unit_])
+  (place-image/align (flip-vertical (_thirteen u))
+                     (unit/2 u) (unit/2 u)
+                     "middle" "top"
+                     (empty-sq u)))
+(define (twelve [deg 0] [u unit_])
+  (rotate deg (_twelve u))
+  (place-image (rotate deg (_twelve u))
+               (unit/2 u) (unit/2 u)
+               (unit-sq u)))
 
-(define _fifteen (place-image/align
-                  (scale 0.5 _two)
+;; Shape #15
+(define (_fifteen [u unit_])
+  (place-image/align
+   (scale 0.5 (_two u))
                   0 0
                   "left" "top"
-                  (empty-sq unit_)))
-(define (fifteen [deg 0])
-  (place-image (rotate deg _fifteen)
-               unit/2 unit/2
-               (unit-sq unit_)))
+                  (empty-sq u)))
+(define (fifteen [deg 0] [u unit_])
+  (place-image (rotate deg (_fifteen u))
+               (unit/2 u) (unit/2 u)
+               (unit-sq u)))
 
-(define (sixteen [deg 0]) (unit-sq unit_))
+;; Shape #16
+(define (sixteen
+         [deg 0]
+         [u unit_])
+  (unit-sq u))
 
-(define _fourteen
-  (let ([t (scale 0.5 _two)])
+;; Shape #14
+(define (_fourteen [u unit_])
+  (let ([t (scale 0.5 (_two u))])
     (rotate 180 t)))
-(define fourteen_ (place-image/align
-                   _fourteen
-                   (/ unit_ 2) (/ unit_ 2)
-                   "right" "bottom"
-                   (empty-sq unit_)))
-(define (fourteen [deg 0])
-  (place-image (rotate deg fourteen_)
-               unit/2 unit/2
-               (unit-sq unit_)))
+
+(define (fourteen_ [u unit_])
+  (place-image/align
+   (_fourteen u)
+   (unit/2 u) (unit/2 u)
+   "right" "bottom"
+   (empty-sq u)))
+
+(define (fourteen [deg 0] [u unit_])
+  (place-image (rotate deg (fourteen_ u))
+               (unit/2 u) (unit/2 u)
+               (unit-sq u)))
   
 
 (define tri-pyramid (scale 0.5
-                           (place-image _seven unit_ unit_ (unit-sq (* 2 unit_)))))
-(define kite (place-image _six
+                           (place-image (_seven) unit_ unit_ (unit-sq (* 2 unit_)))))
+(define kite (place-image (_six)
                           (/ unit_ 2)
                           (/ unit_ 2)
                           (unit-sq unit_)))
 
-(define pyramid (place-image _three
+(define pyramid (place-image (_three)
                              (/ unit_ 2)
                              (/ unit_ 2)
                              (unit-sq unit_)))
