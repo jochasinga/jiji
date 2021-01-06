@@ -125,11 +125,13 @@
     [(eq? as "png")
      (let ([name (string-append dir (uuid-string) ".png")])
        (save-image image name)
-       (printf "Saved ~a" name))]
+       ;; This print is important the server will parse this as file name.
+       (printf "~a" name))]
     [else 
      (let ([name (string-append dir (uuid-string) ".svg")])          
        (save-svg-image image name)
-       (printf "Saved ~a" name))]))
+       ;; This print is important the server will parse this as file name.
+       (printf "~a" name))]))
   
 (match (variation)
   ["single"
