@@ -24,26 +24,35 @@
                     
 (define (pick-el l) (list-ref l (random (length l))))
 
-(define (quilt [img1 null] [img2 null] #:trim-width [trim-width 0.5])
-  (let ([a (cond
-             [(null? img1) (block #:scale 0.2)]
-             [else (scale 0.2 (bitmap/file img1))])]
-        [b (cond
-             [(null? img2) (block #:scale 0.2)]
-             [else (scale 0.2 (bitmap/file img2))])])
-    (overlay
-     (above
-      (beside b a b a b a b a b)
-      (beside a b a b a b a b a)
-      (beside b a b a b a b a b)
-      (beside a b a b a b a b a)
-      (beside b a b a b a b a b)
-      (beside a b a b a b a b a)
-      (beside b a b a b a b a b)
-      (beside a b a b a b a b a)
-      (beside b a b a b a b a b))
-     (scale 0.2 (fill-sq (* 10 (* 3 unit_)))))))
+(define fill-block
+  (let ([a (unit-sq)])
+    (above
+     (beside a a a)
+     (beside a a a)
+     (beside a a a))))
 
+(define (quilt [images null] #:remote [remote #f] #:trim-width [trim-width 0.5])
+  (let* ([create-bitmap (if remote bitmap/url bitmap/file)]
+         [p (cond
+              [(null? images) (list (block #:scale 0.2) (block #:scale 0.2))]
+              [(= (length images) 1)
+               (list (scale 0.2 (create-bitmap (car images))) (scale 0.2 fill-block))]
+              [else (list (scale 0.2 (create-bitmap (car images)))
+                          (scale 0.2 (create-bitmap (car (cdr images)))))])])
+    (match p
+      [(list a b) 
+       (overlay
+        (above
+         (beside b a b a b a b a b)
+         (beside a b a b a b a b a)
+         (beside b a b a b a b a b)
+         (beside a b a b a b a b a)
+         (beside b a b a b a b a b)
+         (beside a b a b a b a b a)
+         (beside b a b a b a b a b)
+         (beside a b a b a b a b a)
+         (beside b a b a b a b a b))
+        (scale 0.2 (fill-sq (* 10 (* 3 unit_)))))])))
 
 (define (block [n 0]
                #:view-mode [m 'solid]
@@ -91,8 +100,6 @@
    #:multi
    [("-i" "--image") IMAGE-FILE
                      "Image of a block"
-                     (print (image-files))
-                     (printf "consing ~a" IMAGE-FILE)
                      (image-files (cons IMAGE-FILE (image-files)))]
                       
    #:once-each
@@ -138,12 +145,11 @@
    (save-img (block) "static/")]
   ["composition"
    (cond
-     [(not (null? image-files))
+     [(not (null? (image-files)))
+      (print "I'm here")
       (save-img
-       (quilt
-        (car (cdr (image-files)))
-        (car (image-files)))
-        "static/")]
+       (quilt (image-files))
+       "static/")]
      [else
       (save-img (quilt) "static/")])])
 

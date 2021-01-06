@@ -21,6 +21,7 @@
          fifteen
          sixteen
          unit_
+         unit-sq
          fill-sq)
 
 ;; Default unit
