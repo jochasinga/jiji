@@ -81,6 +81,7 @@
 (define variation (make-parameter "single"))
 (define view-mode (make-parameter "solid"))
 (define image-files (make-parameter null))
+(define remote (make-parameter #t))
 (define file-name
     (make-parameter (format "~a.png" uuid-string)))
 
@@ -109,6 +110,8 @@
    [("-f" "--file") FILE-NAME
                     "Set the destination file name."
                     (file-name FILE-NAME)]
+   [("-r" "--remote") "Set to download remote file for quilt."
+                      (remote #t)]
 
    #:args () (void)))
 
@@ -146,9 +149,8 @@
   ["composition"
    (cond
      [(not (null? (image-files)))
-      (print "I'm here")
       (save-img
-       (quilt (image-files))
+       (quilt (image-files) #:remote remote)
        "static/")]
      [else
       (save-img (quilt) "static/")])])
