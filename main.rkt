@@ -25,13 +25,12 @@
 (define (pick-el l) (list-ref l (random (length l))))
 
 (define (quilt [img1 null] [img2 null] #:trim-width [trim-width 0.5])
-  (let* ([minibloc (block #:scale 0.2)]
-         [a (cond
-              [(null? img1) minibloc]
-              [else (bitmap/file img1)])]
-         [b (cond
-              [(null? img2) minibloc]
-              [else (bitmap/file img2)])])
+  (let ([a (cond
+             [(null? img1) (block #:scale 0.2)]
+             [else (scale 0.2 (bitmap/file img1))])]
+        [b (cond
+             [(null? img2) (block #:scale 0.2)]
+             [else (scale 0.2 (bitmap/file img2))])])
     (overlay
      (above
       (beside b a b a b a b a b)
@@ -85,17 +84,16 @@
    
    #:once-any
    [("-s" "--single") "Generate a single nine-block unit"
-                      (print "single")
                       (variation "single")]
    [("-c" "--composition") "Generate a quilt design from blocks."
-                      (print "composition")
                       (variation "composition")]
-
+   
    #:multi
    [("-i" "--image") IMAGE-FILE
                      "Image of a block"
                      (print (image-files))
-                     (image-files (cons IMAGE-FILE image-files))]
+                     (printf "consing ~a" IMAGE-FILE)
+                     (image-files (cons IMAGE-FILE (image-files)))]
                       
    #:once-each
    [("-m" "--mode") VIEW-MODE
@@ -138,7 +136,7 @@
    (save-img (block) "static/")]
   ["composition"
    (cond
-     [(pair? image-files)
+     [(not (null? image-files))
       (save-img
        (quilt
         (car (cdr (image-files)))
