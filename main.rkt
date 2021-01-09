@@ -55,7 +55,7 @@
         (scale 0.2 (fill-sq (* 10 (* 3 unit_)))))])))
 
 (define (block [n 0]
-               #:view-mode [m 'solid]
+               #:view-mode [m "solid"]
                #:size [size unit_]
                #:scale [sc 1])
   
@@ -74,9 +74,11 @@
                    (beside sq sq sq)))]
           [curtain (square (* 3 size) 'solid (make-color 255 255 255 150))])
         (scale sc
-               (if (eq? m 'solid)
-                   bg
-                   (overlay grid curtain bg))))))
+               (cond
+                 [(string=? m "solid") bg]
+                 [(string=? m "outline") (overlay grid curtain bg)]
+                 [else bg])))))
+
 
 (define variation (make-parameter "single"))
 (define view-mode (make-parameter "solid"))
@@ -142,17 +144,20 @@
        (save-svg-image image name)
        ;; This print is important the server will parse this as file name.
        (printf "~a" name))]))
-  
-(match (variation)
-  ["single" 
-   (save-img (block #:view-mode view-mode) "static/")]
-  ["composition"
-   (cond
-     [(not (null? (image-files)))
-      (save-img
-       (quilt (image-files) #:remote remote)
-       "static/")]
-     [else
-      (save-img (quilt) "static/")])])
+
+(define (main)
+  (match (variation)
+    ["single" 
+     (save-img (block #:view-mode (view-mode)) "static/")]
+    ["composition"
+     (cond
+       [(not (null? (image-files)))
+        (save-img
+         (quilt (image-files) #:remote (remote))
+         "static/")]
+       [else
+        (save-img (quilt) "static/")])]))
+
+(main)
 
 
