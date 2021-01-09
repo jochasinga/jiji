@@ -144,8 +144,8 @@
        (printf "~a" name))]))
   
 (match (variation)
-  ["single"
-   (save-img (block) "static/")]
+  ["single" 
+   (save-img (block #:view-mode view-mode) "static/")]
   ["composition"
    (cond
      [(not (null? (image-files)))
