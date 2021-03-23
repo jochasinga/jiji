@@ -3,13 +3,14 @@
 
 (require 2htdp/image)
 (require lang/posn)
-(require racket/cmdline)
 (require racket/path)
 (require racket/format)
 (require racket/match)
 (require uuid)
 
-(require (prefix-in list/ "../ratchet/list.rkt"))
+(require "cli.rkt")
+
+(require (prefix-in list/ "../../ratchet/list.rkt"))
 (require (rename-in "primitive.rkt"
                     (unit_ base-unit)))
 
@@ -24,12 +25,28 @@
                     
 (define (pick-el l) (list-ref l (random (length l))))
 
+
+(define (row u [n 3])
+  (if (= n 1)
+      u
+      (beside u (row u (- n 1)))))
+
+
+(define (fill-col nx ny)
+  (letrec ([u (unit-sq)]
+           [a (row u nx)])
+    (if (= ny 1)
+        a
+        (above
+         a
+         (fill-col nx (- ny 1))))))
+
 (define fill-block
-  (let ([a (unit-sq)])
-    (above
-     (beside a a a)
-     (beside a a a)
-     (beside a a a))))
+  (fill-col 3 3))
+
+;(define fill-block
+;  (let ([r  (row unit-sq)])
+;    (above r r r)))
 
 (define (quilt [images null] #:remote [remote #f] #:trim-width [trim-width 0.5])
   (let* ([create-bitmap (if remote bitmap/url bitmap/file)]
@@ -79,44 +96,6 @@
                  [(string=? m "outline") (overlay grid curtain bg)]
                  [else bg])))))
 
-
-(define variation (make-parameter "single"))
-(define view-mode (make-parameter "solid"))
-(define image-files (make-parameter null))
-(define remote (make-parameter #t))
-(define file-name
-    (make-parameter (format "~a.png" uuid-string)))
-
-(define parser
-  (command-line
-   #:program "nine-block generator"
-   
-   #:usage-help
-   "Jiji is a command line tool to generate nine-block quilt pattern."
-   
-   #:once-any
-   [("-s" "--single") "Generate a single nine-block unit"
-                      (variation "single")]
-   [("-c" "--composition") "Generate a quilt design from blocks."
-                      (variation "composition")]
-   
-   #:multi
-   [("-i" "--image") IMAGE-FILE
-                     "Image of a block"
-                     (image-files (cons IMAGE-FILE (image-files)))]
-                      
-   #:once-each
-   [("-m" "--mode") VIEW-MODE
-                    "Set a view mode to solid or outline."
-                    (view-mode VIEW-MODE)]
-   [("-f" "--file") FILE-NAME
-                    "Set the destination file name."
-                    (file-name FILE-NAME)]
-   [("-r" "--remote") "Set to download remote file for quilt."
-                      (remote #t)]
-
-   #:args () (void)))
-
 (define (save-as-image
          filename
          [mode "solid"])
@@ -132,7 +111,7 @@
           (save-image (block #:view-mode mo) name)
           (printf "~a" name)))))
 
-(define (save-img image [dir "./"] [as "png"])
+(define (save-img image [dir "../"] [as "png"])
   (cond
     [(eq? as "png")
      (let ([name (string-append dir (uuid-string) ".png")])
@@ -148,7 +127,7 @@
 (define (main)
   (match (variation)
     ["single" 
-     (save-img (block #:view-mode (view-mode)) "static/")]
+     (save-img (block #:view-mode (view-mode)) "../static/")]
     ["composition"
      (cond
        [(not (null? (image-files)))
@@ -156,7 +135,7 @@
          (quilt (image-files) #:remote (remote))
          "static/")]
        [else
-        (save-img (quilt) "static/")])]))
+        (save-img (quilt) "../static/")])]))
 
 (main)
 
