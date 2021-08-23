@@ -11,8 +11,10 @@
 (require "cli.rkt")
 
 (require (prefix-in list/ "../../ratchet/list.rkt"))
-(require (rename-in "primitive.rkt"
-                    (unit_ base-unit)))
+(require "primitive.rkt")
+(require "helpers.rkt")
+(require (rename-in "constants.rkt"
+                    (UNIT-SIZE base-unit)))
 
 (define unit_ base-unit)
 (define angles '(0 90 180 270))

@@ -19,14 +19,20 @@
                         acc)])
         (aux (cdr (cdr cs)) acc_))))
 
+(define (remove-bang s)
+  (if (char=? (first (string->list s)) #\#)
+      (substring s 1)
+      s))
+
 ;; Converts a color hex value to a list
 ;; of RGB integer list.
 (define (hex->rgb hex)
-  (if (or (< (string-length hex) MIN_HEX_DIGIT)
-          (> (string-length hex) MAX_HEX_DIGIT))
-      (raise-argument-error
-       'hex->rgb
-       "string with length between 2 to 6"
-       hex)
-      (let ([cs (string->list hex)])
-        (reverse (aux (string->list hex) '())))))
+  (let ([hex (remove-bang hex)])
+    (if (or (< (string-length hex) MIN_HEX_DIGIT)
+            (> (string-length hex) MAX_HEX_DIGIT))
+        (raise-argument-error
+         'hex->rgb
+         "string with length between 2 to 6"
+         hex)
+        (let ([cs (string->list hex)])
+          (reverse (aux (string->list hex) '()))))))
