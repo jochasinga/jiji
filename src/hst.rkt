@@ -13,25 +13,86 @@
          bottom-right
          bottom-left)
 
+(require "constants.rkt")
 (require (rename-in "primitive.rkt"
                     (two base-1/2)
                     (thirteen base-1/4)))
 
-(define (top-left) (base-1/2))
+(define (top-left [u UNIT-SIZE]
+                  #:mode [mode MODE]
+                  #:color [color COLOR]
+                  #:bg-color [bg-color BG-COLOR])
+  (base-1/2 0
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
-(define (top-right) (base-1/2 270))
+(define (top-right [u UNIT-SIZE]
+                   #:mode [mode MODE]
+                   #:color [color COLOR]
+                   #:bg-color [bg-color BG-COLOR])
+  (base-1/2 270
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
-(define (bottom-left) (base-1/2 90))
+(define (bottom-left [u UNIT-SIZE]
+                     #:mode [mode MODE]
+                     #:color [color COLOR]
+                     #:bg-color [bg-color BG-COLOR])
+  (base-1/2 90
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
-(define (bottom-right) (base-1/2 180))
+(define (bottom-right [u UNIT-SIZE]
+                      #:mode [mode MODE]
+                      #:color [color COLOR]
+                      #:bg-color [bg-color BG-COLOR])
+  (base-1/2 180))
 
-(define (bottom) (base-1/4))
+(define (bottom [u UNIT-SIZE]
+                #:mode [mode MODE]
+                #:color [color COLOR]
+                #:bg-color [bg-color BG-COLOR])
+  (base-1/4 0
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
-(define (right) (base-1/4 90))
+(define (right [u UNIT-SIZE]
+               #:mode [mode MODE]
+               #:color [color COLOR]
+               #:bg-color [bg-color BG-COLOR])
+  (base-1/4 90
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
-(define (top) (base-1/4 180))
+(define (top [u UNIT-SIZE]
+             #:mode [mode MODE]
+             #:color [color COLOR]
+             #:bg-color [bg-color BG-COLOR])
+  (base-1/4 180
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
-(define (left) (base-1/4 270))
+(define (left [u UNIT-SIZE]
+              #:mode [mode MODE]
+              #:color [color COLOR]
+              #:bg-color [bg-color BG-COLOR])
+  (base-1/4 270
+            u
+            #:mode mode
+            #:color color
+            #:bg-color bg-color))
 
 
 
