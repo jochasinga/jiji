@@ -20,11 +20,17 @@
 
 ;; Some helper squares
 (define (fill-sq [u UNIT-SIZE]) (rectangle u u MODE COLOR))
-(define (unit-sq [u UNIT-SIZE]) (rectangle u u MODE BG-COLOR))
+
+(define (unit-sq [u UNIT-SIZE]
+                 #:mode [mode MODE]
+                 #:bg-color [bg-color BG-COLOR])
+  (rectangle u u mode bg-color))
+
 (define (empty-sq [u UNIT-SIZE]) (rectangle u u MODE "transparent"))
 (define (unit-square
          [u UNIT-SIZE]
-         #:view-mode [view-mode MODE])
+         #:view-mode [view-mode MODE]
+         #:bg-color [bg-color BG-COLOR])
   (match view-mode
-    ['solid   (rectangle u u MODE BG-COLOR)]
+    ['solid   (rectangle u u view-mode bg-color)]
     ['outline (rectangle u u 'outline 'black)]))
